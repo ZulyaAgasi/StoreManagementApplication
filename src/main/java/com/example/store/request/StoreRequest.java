@@ -20,6 +20,12 @@ public class StoreRequest {
 
     @Schema(description = "Местоположение магазина")
     @JsonProperty("location")
+    @NotBlank
     private String location;
+
+    @Schema(description = "Электронная почта магазина")
+    @JsonProperty("email")
+    @NotBlank
+    private String email;
 
 }

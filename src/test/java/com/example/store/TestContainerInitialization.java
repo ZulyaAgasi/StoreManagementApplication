@@ -15,7 +15,8 @@ public class TestContainerInitialization {
     static {
         postgresqlContainer = new PostgreSQLContainer<>("postgres:15")
                 .withDatabaseName("integration-tests-db")
-                .withUsername("sa").withPassword("sa");
+                .withUsername("sa")
+                .withPassword("sa");
         postgresqlContainer.start();
     }
 
