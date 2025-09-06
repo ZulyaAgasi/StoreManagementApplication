@@ -11,7 +11,7 @@ import java.util.UUID;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class StoreResponseDto {
+public class StoreResponseDto { // TODO унаследоваться от AllResponseDto
 
     @Schema(description = "Идентификатор магазина ")
     private UUID id;

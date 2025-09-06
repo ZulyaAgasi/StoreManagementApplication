@@ -33,26 +33,18 @@ class StoreServiceTest extends TestContainerInitialization {
         repository.deleteAll();
     }
 
-    @Test
-    void createStore_whenNameIsBlank_thenThrow() {  // TODO: параметризовать эти два теста
+    @ParameterizedTest
+    @MethodSource("dataBlank")
+    void createStore_whenDataBlank_thenThrow(String name, String location, String email) {
 
-        StoreRequest storeRequest = createStoreRequest("", "леонова", "noname@mail.ru");
-
-        Assertions.assertThrows(ConstraintViolationException.class, () -> service.createStore(storeRequest));
-
-    }
-
-    @Test
-    void createStore_whenLocationIsBlank_thenThrow() {
-
-        StoreRequest storeRequest = createStoreRequest("ярче", "", "yarche@mail.ru");
+        StoreRequest storeRequest = createStoreRequest(name, location, email);
 
         Assertions.assertThrows(ConstraintViolationException.class, () -> service.createStore(storeRequest));
 
     }
 
     @Test
-    void create_whenNameAndLocationNotBlank_thenCreate() {
+    void createStore_whenNameAndLocationNotBlank_thenCreate() {
 
         StoreRequest storeRequest = createStoreRequest("Пятёрочка", "ул. Урванцева","pyaterochka@mail.ru");
 
@@ -85,6 +77,17 @@ class StoreServiceTest extends TestContainerInitialization {
 
     }
 
+    @Test
+    void updateStore_whenStoreExist_thenUpdate() {
+
+        Store store =createStore("Пятёрочка", "Ленина","pyaterochka@mail.ru" );
+
+        StoreRequest storeRequest = createStoreRequest("монетка", "Ленина", "monetka@mail.ru");
+
+        Assertions.assertDoesNotThrow(() -> service.updateStore(store.getId(), storeRequest));
+
+    }
+
     private Store createStore(String name, String location, String email) {
 
         Store store = new Store(UUID.randomUUID(), name, location, null, null );
@@ -94,10 +97,9 @@ class StoreServiceTest extends TestContainerInitialization {
 
     }
 
-
     private StoreRequest createStoreRequest(String name, String location, String email) {
 
-        return new StoreRequest(name, location, "email");
+        return new StoreRequest(name, location, email);
 
     }
 
@@ -107,6 +109,20 @@ class StoreServiceTest extends TestContainerInitialization {
                 Arguments.of("", "ул.Московская",""),
                 Arguments.of("мария-ра", "",""),
                 Arguments.of("", "","")
+        );
+
+    }
+
+    private Stream<Arguments> dataBlank() {
+
+        return Stream.of(
+                Arguments.of("", "леонова", "noname@mail.ru"),
+                Arguments.of("ярче", "", "yarche@mail.ru"),
+                Arguments.of("пятерочка","московская",""),
+                Arguments.of("мария-ра","",""),
+                Arguments.of("","марковцева",""),
+                Arguments.of("","","mariya-ra@mail@ru"),
+                Arguments.of("","","")
         );
 
     }
