@@ -44,9 +44,9 @@ class StoreServiceTest extends TestContainerInitialization {
     }
 
     @Test
-    void createStore_whenNameAndLocationNotBlank_thenCreate() {
+    void createStore_whenNameAndLocationAndEmailNotBlank_thenCreate() {
 
-        StoreRequest storeRequest = createStoreRequest("Пятёрочка", "ул. Урванцева","pyaterochka@mail.ru");
+        StoreRequest storeRequest = createStoreRequest("Пятёрочка", "ул. Урванцева", "pyaterochka@mail.ru");
 
         StoreResponseDto storeResponseDto = Assertions.assertDoesNotThrow(() -> service.createStore(storeRequest));
 
@@ -69,7 +69,7 @@ class StoreServiceTest extends TestContainerInitialization {
     @Test
     void updateStore_whenStoreNotFoundById_thenThrow() {
 
-        createStore("Пятёрочка", "Ленина","pyaterochka@mail.ru" );
+        createStore("Пятёрочка", "Ленина", "pyaterochka@mail.ru");
 
         StoreRequest storeRequest = createStoreRequest("монетка", "Ленина", "monetka@mail.ru");
 
@@ -80,7 +80,7 @@ class StoreServiceTest extends TestContainerInitialization {
     @Test
     void updateStore_whenStoreExist_thenUpdate() {
 
-        Store store =createStore("Пятёрочка", "Ленина","pyaterochka@mail.ru" );
+        Store store = createStore("Пятёрочка", "Ленина", "pyaterochka@mail.ru");
 
         StoreRequest storeRequest = createStoreRequest("монетка", "Ленина", "monetka@mail.ru");
 
@@ -88,9 +88,41 @@ class StoreServiceTest extends TestContainerInitialization {
 
     }
 
+    @Test
+    void deleteStore_whenStoreNotBlank_thenDelete() {
+
+        Store store = createStore("Пятёрочка", "Ленина", "pyaterochka@mail.ru");
+
+        Assertions.assertDoesNotThrow(() -> service.deleteStore(store.getId()));
+
+    }
+
+    @Test
+    void deleteStore_whenIdInvalid_thenThrow() {
+
+        Assertions.assertThrows(IllegalArgumentException.class, () -> service.deleteStore(UUID.fromString("6453")));
+
+    }
+
+    @Test
+    void findById_whenIdValid_thenFind() {
+
+        Store store = createStore("Пятёрочка", "Ленина", "pyaterochka@mail.ru");
+
+        Assertions.assertDoesNotThrow(() -> service.findById(store.getId()));
+
+    }
+
+    @Test
+    void findById_whenIdInvalid_thenThrow() {
+
+        Assertions.assertThrows(NoSuchElementException.class, () -> service.findById(UUID.randomUUID()));
+
+    }
+
     private Store createStore(String name, String location, String email) {
 
-        Store store = new Store(UUID.randomUUID(), name, location, null, null );
+        Store store = new Store(UUID.randomUUID(), name, location, null, null);
         store = repository.saveAndFlush(store);
 
         return store;
@@ -106,9 +138,9 @@ class StoreServiceTest extends TestContainerInitialization {
     private Stream<Arguments> invalidData() {
 
         return Stream.of(
-                Arguments.of("", "ул.Московская",""),
-                Arguments.of("мария-ра", "",""),
-                Arguments.of("", "","")
+                Arguments.of("", "ул.Московская", ""),
+                Arguments.of("мария-ра", "", ""),
+                Arguments.of("", "", "")
         );
 
     }
@@ -118,11 +150,11 @@ class StoreServiceTest extends TestContainerInitialization {
         return Stream.of(
                 Arguments.of("", "леонова", "noname@mail.ru"),
                 Arguments.of("ярче", "", "yarche@mail.ru"),
-                Arguments.of("пятерочка","московская",""),
-                Arguments.of("мария-ра","",""),
-                Arguments.of("","марковцева",""),
-                Arguments.of("","","mariya-ra@mail@ru"),
-                Arguments.of("","","")
+                Arguments.of("пятерочка", "московская", ""),
+                Arguments.of("мария-ра", "", ""),
+                Arguments.of("", "марковцева", ""),
+                Arguments.of("", "", "mariya-ra@mail@ru"),
+                Arguments.of("", "", "")
         );
 
     }
