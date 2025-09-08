@@ -1,10 +1,10 @@
-package com.example.store.service;
+package com.example.service;
 
-import com.example.store.TestContainerInitialization;
-import com.example.store.dto.StoreResponseDto;
-import com.example.store.entity.Store;
-import com.example.store.repository.StoreRepository;
-import com.example.store.request.StoreRequest;
+import com.example.TestContainerInitialization;
+import com.example.dto.StoreResponseDto;
+import com.example.entity.Store;
+import com.example.repository.StoreRepository;
+import com.example.request.StoreRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
