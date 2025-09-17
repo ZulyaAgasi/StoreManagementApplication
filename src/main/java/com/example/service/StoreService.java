@@ -1,10 +1,16 @@
 package com.example.service;
 
 import com.example.dto.AllStoresResponseDto;
+import com.example.dto.ProductResponseDto;
 import com.example.dto.StoreResponseDto;
+import com.example.entity.Product;
 import com.example.entity.Store;
+import com.example.entity.StoreProduct;
 import com.example.mapper.StoreMapper;
+import com.example.repository.ProductRepository;
+import com.example.repository.StoreProductRepository;
 import com.example.repository.StoreRepository;
+import com.example.request.ProductRequest;
 import com.example.request.StoreRequest;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
@@ -13,6 +19,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
@@ -25,7 +32,15 @@ public class StoreService {
     private StoreRepository storeRepository;
 
     @Autowired
+    private StoreProductRepository storeProductRepository;
+
+    @Autowired
+    private ProductRepository productRepository;
+
+    @Autowired
     private StoreMapper mapper;
+    @Autowired
+    private StoreMapper storeMapper;
 
     @Transactional(rollbackFor = Exception.class)
     public StoreResponseDto createStore(@Valid StoreRequest request) {
@@ -35,6 +50,19 @@ public class StoreService {
         storeRepository.saveAndFlush(store);
 
         return mapper.mapToStoreResponseDto(store);
+
+    }
+
+    @Transactional(rollbackFor = Exception.class)
+    public ProductResponseDto createProduct(UUID storeId, @Valid ProductRequest request) {
+
+        Product product = new Product(UUID.randomUUID(), request.getName(), request.getPrice(), "some");
+        StoreProduct storeProduct = new StoreProduct(UUID.randomUUID(), storeId, product.getId());
+
+        productRepository.saveAndFlush(product);
+        storeProductRepository.saveAndFlush(storeProduct);
+
+        return mapper.mapToProductResponseDto(product);
 
     }
 
@@ -115,6 +143,67 @@ public class StoreService {
         storeRepository.saveAndFlush(copyStore);
 
         return mapper.mapToStoreResponseDto(store);
+
+    }
+
+    public List<ProductResponseDto> findAllProductByLocation(String street) {
+
+        //Шаг 1 получаем все магазины
+        List<Store> allStores = storeRepository.findAll();
+        //Шаг 2 фильтруем магазины по указанной улице
+        List<Store> storesOnStreet = new ArrayList<>();
+
+        for (Store store : allStores) {
+
+            if (store.getLocation().contains(street) && store.getLocation() != null) {
+                storesOnStreet.add(store);
+            }
+
+        }
+
+        List<ProductResponseDto> result = new ArrayList<>();
+
+        //Шаг 3 собираем все товары из найденных магазинов
+        for (Store store : storesOnStreet) {
+            List<StoreProduct> storeProduct = storeProductRepository.findByStoreId(store.getId());
+
+            for (StoreProduct sp : storeProduct) {
+                Product product = productRepository.findById(sp.getProductId())
+                        .orElseThrow();
+
+                ProductResponseDto productResponseDto = mapper.mapToProductResponseDto(product);
+
+                result.add(productResponseDto);
+
+            }
+        }
+
+        return result.stream()
+                .distinct()
+                .toList();
+
+    }
+
+    public List<ProductResponseDto> findUniqueProducts() {
+        //Шаг1 получаем все товары
+        List<Product> allProducts = productRepository.findAll();
+        //Шаг 2 получаем результирующий список
+        List<ProductResponseDto> result = new ArrayList<>();
+        //Шаг 3 проходим по каждому товару, проверяем уникальность
+        //Шаг 4 считаем количество магазинов для этого товара, вызываем метод в репозитории, который выполняет наш запрос
+        //Шаг 5 если товар есть только в одном магазине, мы его добавляем в результат
+        for (Product product : allProducts) {
+
+            int countStore = storeRepository.countStoreByProductId(product.getId());
+
+            if (countStore == 1) {
+                result.add(mapper.mapToProductResponseDto(product));
+
+            }
+
+        }
+
+        return result;
 
     }
 

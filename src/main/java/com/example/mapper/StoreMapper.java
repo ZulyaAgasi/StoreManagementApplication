@@ -1,7 +1,9 @@
 package com.example.mapper;
 
 import com.example.dto.AllStoresResponseDto;
+import com.example.dto.ProductResponseDto;
 import com.example.dto.StoreResponseDto;
+import com.example.entity.Product;
 import com.example.entity.Store;
 import org.springframework.stereotype.Component;
 
@@ -18,6 +20,10 @@ public class StoreMapper {
 
         return new AllStoresResponseDto(store.getId(), store.getName(), store.getLocation());
 
+    }
+
+    public ProductResponseDto mapToProductResponseDto(Product product) {
+        return new ProductResponseDto(product.getId(), product.getName(), product.getPrice(), product.getCategory());
     }
 
 }

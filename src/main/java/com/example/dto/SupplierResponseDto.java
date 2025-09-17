@@ -17,7 +17,7 @@ public class SupplierResponseDto {
     @Schema(description = "Идентификатор поставщика ")
     private UUID id;
 
-    @Schema(description = "Название поставщика ")
+    @Schema(description = "Наименование поставщика ")
     private String name;
 
     @Schema(description = "Электронная почта поставщика ")

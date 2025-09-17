@@ -61,6 +61,8 @@ public class SupplierService {
         supplier.setName(request.getName());
         supplier.setAddress(request.getAddress());
         supplier.setEmail(request.getEmail());
+        supplier.setPhone(request.getPhone());
+        supplier.setWebsite(request.getWebsite());
 
         supplierRepository.saveAndFlush(supplier);
 

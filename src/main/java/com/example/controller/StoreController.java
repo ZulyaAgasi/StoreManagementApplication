@@ -1,9 +1,13 @@
 package com.example.controller;
 
 import com.example.dto.AllStoresResponseDto;
+import com.example.dto.ProductResponseDto;
 import com.example.dto.StoreResponseDto;
+import com.example.request.ProductRequest;
 import com.example.request.StoreRequest;
 import com.example.service.StoreService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -90,6 +94,32 @@ public class StoreController {
         StoreResponseDto copyStoreResponseDto = storeService.copy(id);
 
         return ResponseEntity.ok(copyStoreResponseDto);
+
+    }
+
+    @GetMapping("/product/by-location")
+    @Operation(summary = "найти товары в магазинах на улице ",
+            description = "все товары в магазине на указанной улице ")
+    public ResponseEntity<List<ProductResponseDto>> findAllStoreByLocation(
+            @Parameter(description = "название улицы ") @RequestParam String location) {
+
+        List<ProductResponseDto> allProduct = storeService.findAllProductByLocation(location);
+
+        return ResponseEntity.ok(allProduct);
+    }
+
+    @GetMapping("/products/unique")
+    @Operation(summary = "найти уникальные товары", description = " товары, которые продаются только в одном магазине")
+    public ResponseEntity<List<ProductResponseDto>> findUniqueProducts() {
+
+        return ResponseEntity.ok(storeService.findUniqueProducts());
+
+    }
+
+    @PostMapping("/product/{storeId}")
+    public ResponseEntity<ProductResponseDto> createProduct(@PathVariable UUID storeId, @RequestBody ProductRequest request){
+
+        return ResponseEntity.ok(storeService.createProduct(storeId, request));
 
     }
 

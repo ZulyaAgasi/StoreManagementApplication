@@ -18,12 +18,12 @@ import java.util.UUID;
 public class SupplierController {
 
     @Autowired
-    private SupplierService supplierService;
+    private SupplierService service;
 
     @PostMapping
     public ResponseEntity<SupplierResponseDto> createSupplier(@Valid @RequestBody SupplierRequest request) {
 
-        SupplierResponseDto supplierResponseDto = supplierService.createSupplier(request);
+        SupplierResponseDto supplierResponseDto = service.createSupplier(request);
 
         return ResponseEntity.ok(supplierResponseDto);
 
@@ -32,7 +32,7 @@ public class SupplierController {
     @GetMapping("/{id}")
     public ResponseEntity<SupplierResponseDto> findSupplierById(@PathVariable UUID id) {
 
-        SupplierResponseDto supplier = supplierService.findById(id);
+        SupplierResponseDto supplier = service.findById(id);
 
         return ResponseEntity.ok(supplier);
 
@@ -41,7 +41,7 @@ public class SupplierController {
     @PutMapping("/{id}")
     public ResponseEntity<SupplierResponseDto> updateSupplier(@PathVariable UUID id, @Valid @RequestBody SupplierRequest request) {
 
-        SupplierResponseDto updatedSupplier = supplierService.updateSupplier(id, request);
+        SupplierResponseDto updatedSupplier = service.updateSupplier(id, request);
 
         return ResponseEntity.ok(updatedSupplier);
 
@@ -50,7 +50,7 @@ public class SupplierController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteSupplier(@PathVariable UUID id) {
 
-        supplierService.deleteSupplier(id);
+        service.deleteSupplier(id);
 
         return ResponseEntity.noContent().build();
 
